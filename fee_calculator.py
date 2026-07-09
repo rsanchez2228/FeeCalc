@@ -11,26 +11,15 @@ st.write("Enter your activity prices below and click 'Calculate Prices' to view 
 option = st.radio("Choose input method:", ("Type/Paste List", "Upload CSV File"))
 
 if option == "Type/Paste List":
-    # Streamlit text area widget utilizing a dedicated state key
+    # Text area set to open completely blank ("")
     input_data = st.text_area(
         "Paste prices here (one per line):", 
-        key="treasurer_prices_input",
+        value="",
         help="Type or paste a column of numbers straight from Excel."
     )
     
-    # Create side-by-side columns for the buttons
-    btn_col1, btn_col2, _ = st.columns([1.5, 1.2, 5])
-    
-    with btn_col1:
-        calculate_clicked = st.button("Calculate Prices", type="primary", use_container_width=True)
-        
-    with btn_col2:
-        clear_clicked = st.button("Clear All", type="secondary", use_container_width=True)
-    
-    # Clear action utilizing Streamlit's official key dictionary reset method
-    if clear_clicked:
-        st.session_state["treasurer_prices_input"] = ""
-        st.rerun()
+    # Add a formal execution button
+    calculate_clicked = st.button("Calculate Prices", type="primary")
     
     if calculate_clicked:
         if input_data.strip():  # Check to make sure they actually typed something
