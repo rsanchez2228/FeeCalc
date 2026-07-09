@@ -43,8 +43,12 @@ if option == "Type/Paste List":
                 st.write("#### Item Breakdown")
                 st.dataframe(df_display, use_container_width=True)
                 
-                # Allow user to download the original numerical result as a CSV
-                csv = df.to_csv(index=False).encode('utf-8')
+                # Format the CSV data to force 2 decimal places so Excel preserves trailing zeros
+                df_csv = df.copy()
+                df_csv["Original Price"] = df_csv["Original Price"].map("{:.2f}".format)
+                df_csv["New Price (with 4% Fee)"] = df_csv["New Price (with 4% Fee)"].map("{:.2f}".format)
+                
+                csv = df_csv.to_csv(index=False).encode('utf-8')
                 st.download_button(
                     label="Optional: Download Results (CSV)", 
                     data=csv, 
@@ -99,7 +103,12 @@ elif option == "Upload CSV File":
             st.write("#### Item Breakdown")
             st.dataframe(df_display, use_container_width=True)
             
-            csv = df.to_csv(index=False).encode('utf-8')
+            # Format the CSV data to force 2 decimal places so Excel preserves trailing zeros
+            df_csv = df.copy()
+            df_csv[col_name] = df_csv[col_name].map("{:.2f}".format)
+            df_csv["New Price (with 4% Fee)"] = df_csv["New Price (with 4% Fee)"].map("{:.2f}".format)
+            
+            csv = df_csv.to_csv(index=False).encode('utf-8')
             st.download_button(
                 label="Optional: Download Updated CSV File", 
                 data=csv, 
