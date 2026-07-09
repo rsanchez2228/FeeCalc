@@ -11,15 +11,32 @@ st.write("Enter your activity prices below and click 'Calculate Prices' to view 
 option = st.radio("Choose input method:", ("Type/Paste List", "Upload CSV File"))
 
 if option == "Type/Paste List":
-    # Text area set to open completely blank ("")
+    # Use session state to handle clearing the text box dynamically
+    if "text_input" not in st.session_state:
+        st.session_state.text_input = ""
+
+    # Text area bound to the session state variable
     input_data = st.text_area(
-        "Input prices here (one per line):", 
-        value="",
+        "Paste prices here (one per line):", 
+        value=st.session_state.text_input,
+        key="text_area_key",
         help="Type or paste a column of numbers straight from Excel."
     )
     
-    # Add a formal execution button
-    calculate_clicked = st.button("Calculate Prices", type="primary")
+    # Create side-by-side columns for the buttons
+    btn_col1, btn_col2, _ = st.columns([1.5, 1.2, 5])
+    
+    with btn_col1:
+        calculate_clicked = st.button("Calculate Prices", type="primary", use_container_width=True)
+        
+    with btn_col2:
+        clear_clicked = st.button("Clear All", type="secondary", use_container_width=True)
+    
+    # Logic for when Clear All is clicked
+    if clear_clicked:
+        st.session_state.text_input = ""
+        st.session_state.text_area_key = ""
+        st.rerun()
     
     if calculate_clicked:
         if input_data.strip():  # Check to make sure they actually typed something
