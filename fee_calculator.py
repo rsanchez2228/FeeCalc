@@ -58,7 +58,22 @@ if option == "Type/Paste List":
             st.warning("Please paste or type at least one price before clicking Calculate.")
 
 elif option == "Upload CSV File":
-    uploaded_file = st.file_uploader("Upload a CSV file containing an 'Original Price' or 'Amount' column", type=["csv"])
+    # Create the template data (Just one column header: Original Price)
+    template_df = pd.DataFrame(columns=["Original Price"])
+    template_csv = template_df.to_csv(index=False).encode('utf-8')
+    
+    # Provide the template download button right at the top of this section
+    st.download_button(
+        label="📥 Download Blank CSV Template",
+        data=template_csv,
+        file_name="focus_osp_template.csv",
+        mime="text/csv",
+        help="Click here to get a pre-formatted Excel/CSV file with the correct headers."
+    )
+    
+    st.write("---") # Visual separator line
+    
+    uploaded_file = st.file_uploader("Upload your completed CSV file here:", type=["csv"])
     
     # Add a formal execution button
     calculate_clicked = st.button("Process CSV File", type="primary")
