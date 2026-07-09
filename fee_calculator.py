@@ -11,14 +11,10 @@ st.write("Enter your activity prices below and click 'Calculate Prices' to view 
 option = st.radio("Choose input method:", ("Type/Paste List", "Upload CSV File"))
 
 if option == "Type/Paste List":
-    # Initialize session state for tracking the user's text entry
-    if "text_input" not in st.session_state:
-        st.session_state.text_input = ""
-
-    # Text area bound to the tracking variable
+    # Streamlit text area widget utilizing a dedicated state key
     input_data = st.text_area(
         "Paste prices here (one per line):", 
-        value=st.session_state.text_input,
+        key="treasurer_prices_input",
         help="Type or paste a column of numbers straight from Excel."
     )
     
@@ -31,17 +27,14 @@ if option == "Type/Paste List":
     with btn_col2:
         clear_clicked = st.button("Clear All", type="secondary", use_container_width=True)
     
-    # Safely clear out the session state without triggering an API error
+    # Clear action utilizing Streamlit's official key dictionary reset method
     if clear_clicked:
-        st.session_state.text_input = ""
+        st.session_state["treasurer_prices_input"] = ""
         st.rerun()
     
     if calculate_clicked:
         if input_data.strip():  # Check to make sure they actually typed something
             try:
-                # Update our session state tracking with whatever they typed so it doesn't disappear on click
-                st.session_state.text_input = input_data
-                
                 # Convert text lines into a list of floats, skipping empty lines
                 prices = [float(val.strip()) for val in input_data.split("\n") if val.strip()]
                 
