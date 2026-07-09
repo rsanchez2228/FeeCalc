@@ -11,48 +11,51 @@ st.write("Enter your activity prices below and click 'Calculate Prices' to view 
 option = st.radio("Choose input method:", ("Type/Paste List", "Upload CSV File"))
 
 if option == "Type/Paste List":
-    # Text area for copy-pasting numbers
+    # Text area set to open completely blank ("")
     input_data = st.text_area(
         "Paste prices here (one per line):", 
-        value="10.00\n50.00\n100.00",
+        value="",
         help="Type or paste a column of numbers straight from Excel."
     )
     
     # Add a formal execution button
     calculate_clicked = st.button("Calculate Prices", type="primary")
     
-    if calculate_clicked and input_data:
-        try:
-            # Convert text lines into a list of floats, skipping empty lines
-            prices = [float(val.strip()) for val in input_data.split("\n") if val.strip()]
-            
-            # Create a DataFrame and calculate the 4% increase
-            df = pd.DataFrame({"Original Price": prices})
-            df["New Price (with 4% Fee)"] = (df["Original Price"] * 1.04).round(2)
-            
-            # Format the display copy for the web interface table
-            df_display = df.copy()
-            df_display["Original Price"] = df_display["Original Price"].map("${:,.2f}".format)
-            df_display["New Price (with 4% Fee)"] = df_display["New Price (with 4% Fee)"].map("${:,.2f}".format)
-            
-            # Shift the index to start at 1 instead of 0
-            df_display.index = df_display.index + 1
-            
-            # Display the formatted data table directly on the web page
-            st.write("#### Item Breakdown")
-            st.dataframe(df_display, use_container_width=True)
-            
-            # Allow user to download the original numerical result as a CSV
-            csv = df.to_csv(index=False).encode('utf-8')
-            st.download_button(
-                label="Optional: Download Results (CSV)", 
-                data=csv, 
-                file_name="focus_osp_calculated_fees.csv", 
-                mime="text/csv"
-            )
-            
-        except ValueError:
-            st.error("Please make sure all inputs are numbers only (do not include currency symbols like $).")
+    if calculate_clicked:
+        if input_data.strip():  # Check to make sure they actually typed something
+            try:
+                # Convert text lines into a list of floats, skipping empty lines
+                prices = [float(val.strip()) for val in input_data.split("\n") if val.strip()]
+                
+                # Create a DataFrame and calculate the 4% increase
+                df = pd.DataFrame({"Original Price": prices})
+                df["New Price (with 4% Fee)"] = (df["Original Price"] * 1.04).round(2)
+                
+                # Format the display copy for the web interface table
+                df_display = df.copy()
+                df_display["Original Price"] = df_display["Original Price"].map("${:,.2f}".format)
+                df_display["New Price (with 4% Fee)"] = df_display["New Price (with 4% Fee)"].map("${:,.2f}".format)
+                
+                # Shift the index to start at 1 instead of 0
+                df_display.index = df_display.index + 1
+                
+                # Display the formatted data table directly on the web page
+                st.write("#### Item Breakdown")
+                st.dataframe(df_display, use_container_width=True)
+                
+                # Allow user to download the original numerical result as a CSV
+                csv = df.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    label="Optional: Download Results (CSV)", 
+                    data=csv, 
+                    file_name="focus_osp_calculated_fees.csv", 
+                    mime="text/csv"
+                )
+                
+            except ValueError:
+                st.error("Please make sure all inputs are numbers only (do not include currency symbols like $).")
+        else:
+            st.warning("Please paste or type at least one price before clicking Calculate.")
 
 elif option == "Upload CSV File":
     uploaded_file = st.file_uploader("Upload a CSV file containing an 'Original Price' or 'Amount' column", type=["csv"])
