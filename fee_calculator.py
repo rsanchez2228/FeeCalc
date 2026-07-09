@@ -13,7 +13,7 @@ option = st.radio("Choose input method:", ("Type/Paste List", "Upload CSV File")
 if option == "Type/Paste List":
     # Text area set to open completely blank ("")
     input_data = st.text_area(
-        "Paste prices here (one per line):", 
+        "Input prices here (one per line):", 
         value="",
         help="Type or paste a column of numbers straight from Excel."
     )
